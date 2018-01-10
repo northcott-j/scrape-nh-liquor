@@ -10,6 +10,7 @@ class Booze:
 
 	def __init__(self, id):
 		self.item = id
+		self._hash = ''
 		self.product_page = None
 		self.name = ''
 		self.desc = ''
@@ -23,6 +24,41 @@ class Booze:
 		self.pic_url = ''
 		self.store_inv = {}
 		self.rec_items = []
+
+	def scrape(self):
+		scrapers = [self.set_product_page, self.set_name, self.set_desc, self.set_size, self.set_price, self.set_sale_price,
+					self.set_sale_ends, self.set_type, self.set_category, self.set_sub_category, self.set_pic_url,
+					self.set_store_inv, self.set_rec_items, self.set_hash]
+		for s in scrapers:
+			print "Running {0} for {1}...".format(s.__name__, self.item)
+			try:
+				s()
+			except:
+				print "FAILED {0} for {1}!!!!".format(s.__name__, self.item)
+		self.product_page = None
+
+	def export_as_dict():
+		"""
+		Exports needed fields as a dictionary
+		:return: Dict
+		"""
+		d = {
+			"id": self.item,
+			"name": self.name,
+			"description": self.description,
+			"size": self.size,
+			"price": self.price,
+			"sale_price": self.sale_price,
+			"sale_ends": self.sale_ends,
+			"type": self.type,
+			"category": self.category,
+			"sub_category": self.sub_category,
+			"pic_url": self.pic_url,
+			"recommended": self.rec_items
+			"_hash": self._hash
+		}
+		d.update(self.store_inv)
+		return d
 
 	def hash(self):
 		"""
@@ -46,6 +82,15 @@ class Booze:
 		return hashlib.md5("{0}-{1}-{2}-{3}-{4}-{5}-{6}-{7}-{8}-{9}-{10}-{11}".format(self.name, self.desc, 
 			self.size, self.price, self.sale_price, self.type, self.category, dict_hash(self.store_inv), 
 			array_hash(self.rec_items), self.pic_url, self.sub_category, self.sale_ends)).hexdigest()
+
+	def set_hash(self):
+		"""
+		Sets the unique hash
+		:mutate self._hash
+		:return: Hash String
+		"""
+		self._hash = self.hash()
+		return self._hash
 
 	def product_page_url(self):
 		"""
@@ -116,7 +161,9 @@ class Booze:
 			art = self.product_page.find('article')
 			val = ''
 			if art:
-				val = art.find('p').text
+				p_text = art.find('p').text
+				if "Size:" not in p_text:
+					val = p_text
 			return val
 
 		self.desc = self.get_product_field(retrieve)
