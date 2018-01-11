@@ -37,7 +37,7 @@ class Booze:
 				print "FAILED {0} for {1}!!!!".format(s.__name__, self.item)
 		self.product_page = None
 
-	def export_as_dict():
+	def export_as_dict(self):
 		"""
 		Exports needed fields as a dictionary
 		:return: Dict
@@ -45,7 +45,7 @@ class Booze:
 		d = {
 			"id": self.item,
 			"name": self.name,
-			"description": self.description,
+			"description": self.desc,
 			"size": self.size,
 			"price": self.price,
 			"sale_price": self.sale_price,
@@ -54,7 +54,7 @@ class Booze:
 			"category": self.category,
 			"sub_category": self.sub_category,
 			"pic_url": self.pic_url,
-			"recommended": self.rec_items
+			"recommended": self.rec_items,
 			"_hash": self._hash
 		}
 		d.update(self.store_inv)
